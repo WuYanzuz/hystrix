@@ -2,6 +2,8 @@ package com.itheima.provider.controller;
 
 import com.itheima.provider.domain.Goods;
 import com.itheima.provider.service.GoodsService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +27,49 @@ public class GoodsController {
     @Value("${server.port}")
     private int port;
 
-    @GetMapping("/findOne/{id}")
-    public Goods findOne(@PathVariable("id") int id){
+    /**
+     * 降级：
+     * 1. 出现异常
+     * 2. 服务调用超时
+     * * 默认1s超时
+     *
+     * @HystrixCommand(fallbackMethod = "findOne_fallback")
+     * fallbackMethod：指定降级后调用的方法名称
+     */
 
+    @GetMapping("/findOne/{id}")
+    @HystrixCommand(fallbackMethod = "findOne_fallback", commandProperties = {
+            //设置Hystrix的超时时间，默认1s
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000")
+
+    })
+    public Goods findOne(@PathVariable("id") int id) {
+
+        //1.造个异常
+        int i = 3 / 0;
+        try {
+            //2. 休眠2秒
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Goods goods = goodsService.findOne(id);
 
         goods.setTitle(goods.getTitle() + ":" + port);//将端口号，设置到了 商品标题上
         return goods;
     }
+
+
+    /**
+     * 定义降级方法：
+     * 1. 方法的返回值需要和原方法一样
+     * 2. 方法的参数需要和原方法一样
+     */
+    public Goods findOne_fallback(int id) {
+        Goods goods = new Goods();
+        goods.setTitle("降级了~~~ 提供方");
+
+        return goods;
+    }
+
 }

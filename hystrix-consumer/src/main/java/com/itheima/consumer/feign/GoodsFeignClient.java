@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
-
-@FeignClient(value = "HYSTRIX-PROVIDER")
+//fallback = GoodsFeignClientImpl.class ：设置降级回调类
+@FeignClient(value = "HYSTRIX-PROVIDER", fallback = GoodsFeignClientImpl.class)
 public interface GoodsFeignClient {
 
 

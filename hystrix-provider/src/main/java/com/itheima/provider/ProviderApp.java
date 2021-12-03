@@ -2,6 +2,7 @@ package com.itheima.provider;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 /**
@@ -10,6 +11,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @EnableEurekaClient //该注解 在新版本中可以省略
 @SpringBootApplication
+@EnableCircuitBreaker//开启hystrix
 public class ProviderApp {
 
 

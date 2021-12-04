@@ -12,6 +12,7 @@
         <module>eureka-server</module>
         <module>hystrix-provider</module>
         <module>hystrix-consumer</module>
+        <module>hystrix-monitor</module>
     </modules>
 
     <!--spring boot 环境 -->
